@@ -5,10 +5,9 @@
 #include "imports.h"
 #include "ports.h"
 
-int get_socket(int addrinfo_status, struct addrinfo* addr_info_list, struct addrinfo* address, bool is_host){
+int get_socket(int addrinfo_status, struct addrinfo* addr_info_list, struct addrinfo** address, bool is_host){
 
     int sockfd;
-    struct addrinfo *addr_ref;
     int reuse_socket = 1;
 
     if(addrinfo_status != 0){
@@ -18,19 +17,17 @@ int get_socket(int addrinfo_status, struct addrinfo* addr_info_list, struct addr
     }
 
     /* Loop through linkedlist, find first bindable address */
-    for(addr_ref = addr_info_list; addr_ref != NULL; addr_ref = addr_ref->ai_next){
+    for(*address = addr_info_list; *address != NULL; *address = (*address)->ai_next){
 
         /* get sockfd via socket call with domain, type, and protocol*/
-        sockfd = socket(addr_ref->ai_family, addr_ref->ai_socktype, addr_ref->ai_protocol);
+        sockfd = socket((*address)->ai_family, (*address)->ai_socktype, (*address)->ai_protocol);
         if(sockfd == -1){
             perror("invalid socket\n");
             continue;
         }
 
-        printf("is host: %d\n", is_host);
         if (is_host == true){
-            printf("binding socket %d to port\n", sockfd);
-            if(bind(sockfd, addr_ref->ai_addr, addr_ref->ai_addrlen) == -1){
+            if(bind(sockfd, (*address)->ai_addr, (*address)->ai_addrlen) == -1){
                 /**
                  * Bind to associate port with the socket file descriptor, addr ref and length of ref in bytes
                  * kernel will associate sockfd with the port in the addrinfo struct
@@ -48,24 +45,10 @@ int get_socket(int addrinfo_status, struct addrinfo* addr_info_list, struct addr
         break;
     }
 
-    if(addr_ref == NULL){
+    if((*address) == NULL){
         fprintf(stderr, "server: failed to bind\n");
         exit(1);
     }
-
-    if(address != NULL){
-
-        (*address).ai_addr = addr_ref->ai_addr;
-        (*address).ai_canonname = addr_ref->ai_canonname;
-        (*address).ai_addrlen = addr_ref->ai_addrlen;
-        (*address).ai_family = addr_ref->ai_family;
-        (*address).ai_flags = addr_ref->ai_flags;
-        (*address).ai_next = addr_ref->ai_next;
-        (*address).ai_protocol = addr_ref->ai_protocol;
-        (*address).ai_socktype = addr_ref->ai_socktype;
-    }
-
-//    freeaddrinfo(addr_info_list);
 
     return sockfd;
 }
@@ -80,8 +63,6 @@ int send_packet(int socket, void* packet, int packet_size, struct sockaddr* inco
         close(socket);
         fprintf(stderr, "udp: can't send\n");
     }
-
-    printf("num_byes = %d\n", num_bytes);
 
     return num_bytes;
 }
@@ -169,7 +150,6 @@ struct timeval getTime(){
     struct timeval time;
     gettimeofday(&time, 0);
 
-    printf("time: %lu\n", time.tv_sec);
     return time;
 }
 
@@ -177,15 +157,15 @@ void set_frame_to_default(frame* f){
     struct timeval time;
     time.tv_sec = 0;
     f->seq = -1;
-    f->creation_time = time;
+    f->time = time;
+    f->sent = false;
     strcpy(f->data, "");
 }
 
 void print_frame(frame* f){
 
-    printf("Frame Info: %d\n", f->seq);
+    printf("Frame Info:\n");
     printf(" Sequence number: %d\n", f->seq);
-    printf(" Creation time: %lu\n", f->creation_time.tv_sec);
     printf(" Data: %s\n", f->data);
 }
 

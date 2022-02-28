@@ -23,12 +23,13 @@ typedef struct frame{
 
     /* header */
     int seq;
-    struct timeval creation_time;
+    bool sent;
+    struct timeval time;
     /* data */
     char data[MAX_MSG_LEN];
 }frame;
 
-int get_socket(int addrinfo_status, struct addrinfo* addr_info_list, struct addrinfo* address, bool is_host);
+int get_socket(int addrinfo_status, struct addrinfo* addr_info_list, struct addrinfo** address, bool is_host);
 int send_packet(int socket, void* packet, int packet_size, struct sockaddr* incoming_addr, socklen_t addr_length);
 char* get_host_name();
 void print_frame(frame* f);
