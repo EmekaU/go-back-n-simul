@@ -168,9 +168,6 @@ void receive_acks(){ // receiver would ask for next seq number.
         }
 
         shift_left(count, window_size, sending_window);
-        for (int i = 0; i < window_size; i++) {
-            print_frame(&sending_window[i]);
-        }
         pthread_mutex_unlock(&mutex);
 
     }else{

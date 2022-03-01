@@ -1,4 +1,4 @@
-## Author: Emeka V Umeozo [11249945/cvu302]
+## Author: Emeka Umeozo
 
 ## Instructions 
  - Call `make` to compile the files
