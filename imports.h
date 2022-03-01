@@ -1,6 +1,5 @@
-/*
-    Author - Emeka V Umeozo [cvu302, 11249945]
-*/
+// Author - Emeka Umeozo
+
 #ifndef IMPORTS_H
 #define IMPORTS_H
 #include <stdio.h>

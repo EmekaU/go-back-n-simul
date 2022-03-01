@@ -1,4 +1,4 @@
-# Author - Emeka V Umeozo [cvu302, 11249945]
+# Author - Emeka Umeozo
 
 CC = gcc
 CFLAGS = -g

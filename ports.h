@@ -1,6 +1,5 @@
-/*
-    Author - Emeka V Umeozo [cvu302, 11249945]
-*/
+// Author - Emeka Umeozo
+
 #ifndef PORTS_H
 #define PORTS_H
 #define MAX_PORT_NO "40000"
